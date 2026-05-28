@@ -64,6 +64,11 @@ class DqList {
             return dat[(tail - 1) & mask];
         }
 
+        public void set(int index, int value) {
+            if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
+            dat[(head + index) & mask] = value;
+        }
+
         private void grow() {
             int oldCap = dat.length;
             int[] newDat = new int[oldCap << 1];
@@ -128,6 +133,11 @@ class DqList {
             return dat[(tail - 1) & mask];
         }
 
+        public void set(int index, long value) {
+            if (index < 0 || index >= size) throw new IndexOutOfBoundsException();
+            dat[(head + index) & mask] = value;
+        }
+
         public long pollFirst() {
             if (size == 0) throw new NoSuchElementException();
             long res = dat[head];
@@ -190,6 +200,10 @@ class DqList {
 
         public double getLast() {
             return Double.longBitsToDouble(dql.getLast());
+        }
+
+        public void set(int index, double value) {
+            dql.set(index, Double.doubleToRawLongBits(value));
         }
 
         public double pollFirst() {
