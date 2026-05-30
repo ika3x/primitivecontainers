@@ -1,6 +1,9 @@
 import java.util.*;
 
-class LDDqList {
+// ignore this (to shut ide up)
+public class LDDqList {}
+
+class LongDqList {
 
     // ignore this
     private static final int DEFAULT_CAPACITY = 8;
@@ -12,11 +15,11 @@ class LDDqList {
     private int mask;
     private int size;
 
-    public LDDqList() {
+    public LongDqList() {
         this(DEFAULT_CAPACITY);
     }
 
-    public LDDqList(int capacity) {
+    public LongDqList(int capacity) {
         int n = 1;
         while (n < capacity) {n <<= 1;}
         dat = new long[n];
@@ -83,6 +86,17 @@ class LDDqList {
 
     public int size() { return size; }
     public boolean isEmpty() { return size == 0; }
+
+    @Override
+    public String toString() {
+        if (size == 0) {return "[]";}
+        StringBuilder sb = new StringBuilder("[");
+        sb.append(getFirst());
+        for (int i = 1; i < size; i++) {
+            sb.append(',').append(' ').append(get(i));
+        }
+        return sb.append(']').toString();
+    }
 }
 
 class DoubleDqList {
@@ -91,10 +105,10 @@ class DoubleDqList {
     private static final int DEFAULT_CAPACITY = 8;
     // endIgnore
 
-    private final LDDqList dql;
+    private final LongDqList dql;
     
     public DoubleDqList(int capacity) {
-        dql = new LDDqList(capacity);
+        dql = new LongDqList(capacity);
     }
 
     public DoubleDqList() {
@@ -131,4 +145,16 @@ class DoubleDqList {
 
     public int size() { return dql.size(); }
     public boolean isEmpty() { return dql.isEmpty(); }
+
+    @Override
+    public String toString() {
+        if (size() == 0) {return "[]";}
+        StringBuilder sb = new StringBuilder("[");
+        sb.append(getFirst());
+        int sz = size();
+        for (int i = 1; i < sz; i++) {
+            sb.append(',').append(' ').append(get(i));
+        }
+        return sb.append(']').toString();
+    }
 }

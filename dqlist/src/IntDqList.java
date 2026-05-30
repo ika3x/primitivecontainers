@@ -83,4 +83,15 @@ class IntDqList {
 
     public int size() { return size; }
     public boolean isEmpty() { return size == 0; }
+
+    @Override
+    public String toString() {
+        if (size == 0) {return "[]";}
+        StringBuilder sb = new StringBuilder("[");
+        sb.append(getFirst());
+        for (int i = 1; i < size; i++) {
+            sb.append(',').append(' ').append(get(i));
+        }
+        return sb.append(']').toString();
+    }
 }

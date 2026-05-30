@@ -113,12 +113,23 @@ class DoubleMutList implements Iterable<Double> {
 
     @Override
     public String toString() {
-        if (size == 0) {return "";}
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < size; i++) {
-            sb.append(dat[i]).append(' ');
+        if (size == 0) {return "[]";}
+        StringBuilder sb = new StringBuilder("[");
+        sb.append(dat[0]);
+        for (int i = 1; i < size; i++) {
+            sb.append(',').append(' ').append(dat[i]);
         }
-        sb.deleteCharAt(sb.length()-1);
+        sb.append(']');
+
+        return sb.toString();
+    }
+
+    public String toCPString() {
+        if (size == 0) {return "";}
+        StringBuilder sb = new StringBuilder(Double.toString(dat[0]));
+        for (int i = 1; i < size; i++) {
+            sb.append(' ').append(dat[i]);
+        }
 
         return sb.toString();
     }

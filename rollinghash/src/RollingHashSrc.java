@@ -1,9 +1,14 @@
 import java.util.*;
 
+public class RollingHashSrc {}
+
 class RHF {
     private final long MOD;
     private final long BASE;
     private final IntMutList pb = new IntMutList(16);
+
+    private static long id = 0;
+    private final long this_id;
 
     private static class IntMutList {
         private int[] dat;
@@ -64,6 +69,8 @@ class RHF {
         this.BASE = base;
 
         pb.add(1);
+
+        this_id = id++;
     }
     
     public class RhStr {
@@ -71,11 +78,17 @@ class RHF {
         private final int len;
         private long[] preh;
 
+        /*
+        * RollingHash equals:
+        * r1.getRh() == r2.getRh()
+        */
+        @Deprecated
         @Override
-        public int hashCode() {
-            return (int)(preh[len] ^ (MOD * BASE));
+        public boolean equals(Object obj) {
+            if (!(obj instanceof RhStr)) {return false;}
+            return this.str.equals(((RhStr)obj).str); 
         }
-        
+
         private RhStr(String s) {
             this.str = s;
             this.len = s.length();
@@ -116,9 +129,46 @@ class RHF {
             long res = preh[endIndex] - del; res %= MOD; if (res < 0) {res += MOD;}
             return (int) res;
         }
+
+        public int length() {
+            return len;
+        }
+
+        @Deprecated
+        public String rawStr() {
+            return str;
+        }
+
+        @Override
+        public String toString() {
+            if (toStr == null) {
+                makeToStr();
+            }
+
+            return toStr;
+        }
+
+        private String toStr;
+        
+        private void makeToStr() {
+            StringBuilder sb = new StringBuilder("RhStr(");
+            sb.append(preh[len]).append(", ");
+            if (len <= 13) {
+                sb.append('\"');
+                sb.append(str);
+                sb.append('\"');
+            } else {
+                sb.append(str.substring(0, 5));
+                sb.append("...");
+                sb.append(str.substring(len - 5, len));
+            }
+
+            sb.append(", id=").append(this_id).append(')');
+            toStr = sb.toString();
+        }
     }
 
-    public void growPowTable(int to) {
+    private void growPowTable(int to) {
         pb.ensureCapacity(to + 3);
         while (to >= pb.size()) {
             long last = pb.getLast();
@@ -137,6 +187,29 @@ class RHF {
     public RhStr createReversed(String s) {
         s = new StringBuilder(s).reverse().toString();
         return create(s);
+    }
+
+    public int concat(RhStr r1, RhStr r2) {
+        long h1 = r1.getRh();
+        long h2 = r2.getRh();
+        return (int)((h1 * pb.get(r2.length()) % MOD + h2) % MOD);
+    }
+
+    public int concat(int s1, int s2, int s2_length) {
+        return (int)((s1 * pb.get(s2_length) % MOD + s2) % MOD);
+    }
+
+    public long getPb(int index) {
+        if (index >= pb.size()) {
+            growPowTable(index + 3);
+        }
+
+        return pb.get(index);
+    }
+
+    @Override
+    public String toString() {
+        return "RHF(mod="+MOD+", base="+BASE+", id="+this_id+")";
     }
 }
 
@@ -178,5 +251,27 @@ record Rh3Pair(int h1, int h2, int h3) implements Comparable<Rh3Pair> {
         if (this.h1 != o.h1) {return Integer.compare(this.h1, o.h1);}
         else if (this.h2 != o.h2) {return Integer.compare(this.h2, o.h2);}
         else {return Integer.compare(this.h3, o.h3);}
+    }
+}
+
+record Rh4Pair(int h1, int h2, int h3, int h4) implements Comparable<Rh4Pair> {
+    @Override
+    public final int hashCode() {
+        return (h1 * (929285503 ^ h4)) + ((h2 * h3) - h4);
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        if (!(obj instanceof Rh4Pair)) {return false;}
+        Rh4Pair o = (Rh4Pair) obj;
+        return this.h1 == o.h1 && this.h2 == o.h2 && this.h3 == o.h3 && this.h4 == o.h4; 
+    }
+
+    @Override
+    public int compareTo(Rh4Pair o) {
+        if (this.h1 != o.h1) {return Integer.compare(this.h1, o.h1);}
+        else if (this.h2 != o.h2) {return Integer.compare(this.h2, o.h2);}
+        else if (this.h3 != o.h3) {return Integer.compare(this.h3, o.h3);}
+        else {return Integer.compare(this.h4, o.h4);}
     }
 }
